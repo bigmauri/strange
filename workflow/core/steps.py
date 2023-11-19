@@ -1,9 +1,11 @@
 import enum
 import logging
 import os
+import re
 import sys
 import shlex
 import subprocess
+import tempfile
 
 from workflow import WorkflowState
 from workflow.core import step
@@ -42,15 +44,28 @@ class Step:
     @step
     def run(self, *args, **kwargs):
         logging.debug(f"command: {self.__STEP["command"]}")
+        matches = re.findall(r"\$\((.*?)\)", self.__STEP["command"])
+        if matches:
+            p = subprocess.Popen(shlex.split(matches[0]), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p.wait()
+            o = p.stdout
+            self.__STEP["command"] = re.sub(r"\$\((.*?)\)", o.read().decode("utf-8").strip("\n"), self.__STEP["command"])
+
         command = shlex.split(self.__STEP["command"])
         print("@@@@@"*5, end="\n\n", flush=True)
         print(command, flush=True)
 
         if "cd" not in command:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if matches:
+                process = subprocess.Popen(command, stdin=p.stdout, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                process.wait()
+                po, pe = p.communicate()
+
+            else:
+                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, errs = process.communicate()
-            out = out.decode("utf-8").rstrip("\n") if out is not None else out.decode("utf-8")
-            errs = errs.decode("utf-8").rstrip("\n") if errs is not None else errs.decode("utf-8") 
+            out = out.decode("utf-8").rstrip("\n") if out is not None else out
+            errs = errs.decode("utf-8").rstrip("\n") if errs is not None else errs
             self.__current_process["pid"] = process.pid
             self.__current_process["returncode"] = process.returncode
             self.__current_process["out"] = out
@@ -62,6 +77,7 @@ class Step:
             self.__current_process["returncode"] = 0
             self.__current_process["out"] = f"Moving to >>> {os.getcwd()}"
             self.__current_process["errs"] = None
+
         print(f"\n{"@@@@@"*5}", flush=True)
 
     def notify(self):
@@ -85,6 +101,7 @@ class Step:
             },
         }
         stages[index]["jobs"][j]["steps"].append(data) if not any_step else list(d.update(data) for d in stages[index]["jobs"][j]["steps"] if step in d.values())
+        self.__current_process = {"pid": None, "returncode": None, "out": None, "errs": None}
 
     def __str__(self):
         return self.__class__.__name__
