@@ -1,0 +1,21 @@
+# Packages
+*.egg-info
+dist
+build
+__pycache__
+*.pyc
+*.swp
+
+# Documentation
+docs/_build/*
+docs/gh-pages/*
+
+# Virtual environments
+venv/*
+env/*
+.venv/*
+.env/*
+
+# IDE-specific files
+*.idea/*
+*.vscode/*

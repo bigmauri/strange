@@ -1,0 +1,96 @@
+__commands:
+
+  network:
+    - &check_connectivity_by_google_with_ping
+      command: >
+        ping -n 3 8.8.8.8
+  os:
+    - &get_current_directory
+      command: >
+        pwd
+
+  infrastructure:
+    - &init
+      name: Initialization
+      jobs:
+        - name: before pipeline
+          steps:
+            - name: Verify directory - before pipeline
+              <<: *get_current_directory
+    - &end
+      name: End
+      jobs:
+        - name: after pipeline
+          steps:
+            - name: Verify directory - after pipeline
+              <<: *get_current_directory
+
+
+pipeline:
+  name: Localhost
+
+  stages:
+
+    - *init
+
+    - name: Network
+      jobs:
+        - name: Network Connectivity
+          steps:
+            - name: verify google.com
+              <<: *check_connectivity_by_google_with_ping
+              
+    - name: Modules
+      jobs:
+        - name: Verify package installations
+          steps:
+            - name: Verify directory - before modules
+              <<: *get_current_directory
+            - name: verify Git version
+              command: git -v
+            - name: move directory
+              command: >
+                cd ..
+
+    - *end
+
+    # - name: Build Firmware
+    #   jobs:
+
+    #     - name: compile micropython
+    #       steps:
+
+    #         - name: check micropython bin path
+    #           command: which micropython
+              
+    #         - name: test micropython
+    #           command: micropython --test connectivity
+
+    #     - name: build firmware
+    #       steps:
+    #         - name: build esp8266 firmware
+    #           command: micropython --install esp8266 --output ./esp8266.bin
+
+    # - name: Test Firmware
+    #   jobs:
+
+    #     - name: test firmware eth0 network interface
+    #       steps:
+    #         - name: test network
+    #           command: micropython --check net eth0
+
+    # - name: Publish
+    #   jobs:
+
+    #     - name: upload firmware
+    #       steps:
+    #         - name: docker container push
+    #           command: docker push esp8266:latest 
+
+    # - name: Deploy
+    #   jobs:
+
+    #     - name: deploy firmware
+    #       steps:
+    #         - name: remote deploy
+    #           command: ssh user@localhost docker pull esp8266:latest 
