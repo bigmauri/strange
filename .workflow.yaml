@@ -3,7 +3,7 @@ __commands:
   network:
     - &check_connectivity_by_google_with_ping
       command: >
-        ping -n 3 8.8.8.8
+        ping -n 10 8.8.8.8
   os:
     - &get_current_directory
       command: >
@@ -16,6 +16,10 @@ __commands:
     - &git_pull_current_branch
       command: >
         git pull origin $(git name-rev --name-only HEAD)
+
+    - &git_push_current_branch
+      command: >
+        git push origin $(git name-rev --name-only HEAD)
 
   infrastructure:
     - &init
@@ -67,5 +71,9 @@ pipeline:
           steps:
             - name: pull current branch
               <<: *git_pull_current_branch
+        - name: Push
+          steps:
+            - name: push current branch
+              <<: *git_push_current_branch
 
     - *end

@@ -63,9 +63,11 @@ class Step:
 
             else:
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, errs = process.communicate()
-            out = out.decode("utf-8").rstrip("\n") if out is not None else out
-            errs = errs.decode("utf-8").rstrip("\n") if errs is not None else errs
+            out, errs = [], []
+            if process.stdout:
+                for lo in process.stdout: out.append(lo.decode("utf-8").rstrip("\n")); print(lo.decode("utf-8").rstrip("\n"))
+            if process.stderr:
+                for le in process.stderr: errs.append(le.decode("utf-8").rstrip("\n")); print(le.decode("utf-8").rstrip("\n"))
             self.__current_process["pid"] = process.pid
             self.__current_process["returncode"] = process.returncode
             self.__current_process["out"] = out
