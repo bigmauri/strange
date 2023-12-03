@@ -39,12 +39,12 @@ class Pipeline:
 
 
     def start(self):
-        logging.debug(f"Start {self} -> {self.__PIPELINE["name"]}")
+        logging.debug(f"Start {self} -> {self.__PIPELINE['name']}")
         self._current_state = WorkflowState.RUNNING
         self.notify()
 
     def stop(self):
-        logging.debug(f"Stop {self} -> {self.__PIPELINE["name"]}")
+        logging.debug(f"Stop {self} -> {self.__PIPELINE['name']}")
         self._current_state = WorkflowState.COMPLETED
         self.notify()
 

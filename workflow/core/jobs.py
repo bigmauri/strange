@@ -25,11 +25,11 @@ class Job:
         self.__STAGE = kwargs.get("__stage")
         self.__JOB = kwargs.get("__job")
         self.__PIPELINE._current_state, self._current_state = WorkflowState.RUNNING, WorkflowState.RUNNING
-        logging.debug(f"Start {self} -> {self.__JOB["name"]}")
+        logging.debug(f"Start {self} -> {self.__JOB['name']}")
         self.notify()
 
     def stop(self):
-        logging.debug(f"Stop {self} -> {self.__JOB["name"]}")
+        logging.debug(f"Stop {self} -> {self.__JOB['name']}")
         self._current_state = WorkflowState.COMPLETED
         self.notify()
 

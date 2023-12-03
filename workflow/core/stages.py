@@ -23,11 +23,11 @@ class Stage:
         self.__PIPELINE = kwargs.get("__pipeline")
         self.__STAGE = kwargs.get("__stage")
         self.__PIPELINE._current_state, self._current_state = WorkflowState.RUNNING, WorkflowState.RUNNING
-        logging.debug(f"Start {self} -> {self.__STAGE["name"]}")
+        logging.debug(f"Start {self} -> {self.__STAGE['name']}")
         self.notify()
 
     def stop(self):
-        logging.debug(f"Stop {self} -> {self.__STAGE["name"]}")
+        logging.debug(f"Stop {self} -> {self.__STAGE['name']}")
         self._current_state = WorkflowState.COMPLETED
         self.notify()
 

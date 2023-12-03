@@ -33,17 +33,17 @@ class Step:
         self.__JOB = kwargs.get("__job")
         self.__STEP = kwargs.get("__step")
         self.__PIPELINE._current_state, self._current_state = WorkflowState.RUNNING, WorkflowState.RUNNING        
-        logging.debug(f"Start {self} -> {self.__STEP["name"]}")
+        logging.debug(f"Start {self} -> {self.__STEP['name']}")
         self.notify()
 
     def stop(self):
-        logging.debug(f"Stop {self} -> {self.__STEP["name"]}")
+        logging.debug(f"Stop {self} -> {self.__STEP['name']}")
         self._current_state = WorkflowState.COMPLETED
         self.notify()
 
     @step
     def run(self, *args, **kwargs):
-        logging.debug(f"command: {self.__STEP["command"]}")
+        logging.debug(f"command: {self.__STEP['command']}")
         matches = re.findall(r"\$\((.*?)\)", self.__STEP["command"])
         if matches:
             p = subprocess.Popen(shlex.split(matches[0]), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -80,7 +80,7 @@ class Step:
             self.__current_process["out"] = f"Moving to >>> {os.getcwd()}"
             self.__current_process["errs"] = None
 
-        print(f"\n{"@@@@@"*5}", flush=True)
+        print(f"\n{'@@@@@'*5}", flush=True)
 
     def notify(self):
         step, job, stage, stages = self.__STEP["name"], self.__JOB["name"], self.__STAGE.name, self.__PIPELINE._realtime.stages
