@@ -49,7 +49,6 @@ pipeline:
       disable: true
       jobs:
         - name: Network Connectivity
-          disable: true
           steps:
             - name: verify google.com
               <<: *check_connectivity_by_google_with_ping
@@ -74,7 +73,6 @@ pipeline:
             - name: pull current branch
               <<: *git_pull_current_branch
         - name: Push
-          disable: true
           steps:
             - name: push current branch
               <<: *git_push_current_branch
